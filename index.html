@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>لوجيكال كود | Logical Code</title>
+<meta name="description" content="لوجيكال كود: مكتب في الموصل يجمع بين المنطق الأكاديمي والخبرة البرمجية. تصميم برامج ومواقع، دعم الباحثين للنشر العالمي، ومشاريع أكاديمية وعملية.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy-900:#050f22;
+  --navy-800:#08183a;
+  --navy-700:#0d2350;
+  --line:rgba(160,190,230,.16);
+  --white:#f4f8ff;
+  --silver:#b9c6da;
+  --cyan:#27e4ff;
+  --cyan-soft:rgba(39,228,255,.14);
+  --orange:#ff8a1f;
+  --orange-deep:#e06f05;
+  --wrap:1120px;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+/* الهوية داكنة في الوضعين الفاتح والداكن */
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--navy-900:#050f22}}
+:root[data-theme="dark"]{--navy-900:#050f22}
+
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 76px)}
+body{
+  margin:0;
+  background:var(--navy-900);
+  color:var(--silver);
+  font-family:"Cairo","Segoe UI",Tahoma,Arial,sans-serif;
+  font-size:1.0625rem;
+  line-height:1.9;
+  overflow-x:hidden;
+}
+#net{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(circle at 80% -10%,rgba(39,228,255,.10),transparent 45%),
+    radial-gradient(rgba(160,190,230,.20) 1px,transparent 1.4px);
+  background-size:auto,28px 28px;
+}
+header,main,footer,.dock{position:relative;z-index:1}
+.wrap{width:min(100% - 2.5rem,var(--wrap));margin-inline:auto}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--cyan);outline-offset:3px;border-radius:6px}
+h1,h2,h3{font-weight:900;line-height:1.35;margin:0}
+p{margin:0}
+
+/* الشريط العلوي */
+.top{
+  position:sticky;top:env(safe-area-inset-top,0px);z-index:20;
+  background:rgba(5,15,34,.86);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.top .wrap{display:flex;align-items:center;gap:1rem;min-height:68px}
+.brand{display:flex;align-items:center;gap:.65rem;text-decoration:none;margin-inline-end:auto}
+.brand svg{width:46px;height:46px;flex:none}
+.brand b{display:block;color:var(--white);font-weight:900;font-size:1.05rem;line-height:1.2}
+.brand span{display:block;color:var(--cyan);font-size:.72rem;letter-spacing:.06em;line-height:1.3;font-family:"Cairo",sans-serif}
+.nav{display:flex;gap:1.5rem;list-style:none;margin:0;padding:0}
+.nav a{text-decoration:none;color:var(--silver);font-weight:600;font-size:.95rem;padding:.4rem 0;border-bottom:2px solid transparent}
+.nav a:hover{color:var(--white);border-color:var(--cyan)}
+.menu-btn{display:none;background:none;border:1px solid var(--line);border-radius:10px;width:44px;height:44px;color:var(--white);cursor:pointer}
+.menu-btn svg{width:22px;height:22px}
+
+/* أزرار التواصل: البرتقالي لها فقط */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.55rem;
+  font:inherit;font-weight:700;text-decoration:none;cursor:pointer;
+  padding:.7rem 1.5rem;border-radius:12px;border:2px solid var(--orange);
+  background:var(--orange);color:#1c0f00;
+  transition:background .15s,transform .15s;
+}
+.btn:hover{background:var(--orange-deep);border-color:var(--orange-deep)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--orange)}
+.btn.ghost:hover{background:rgba(255,138,31,.12)}
+.btn svg{width:20px;height:20px;flex:none}
+.btn.small{padding:.45rem 1.05rem;font-size:.92rem}
+
+/* الواجهة الرئيسية */
+.hero{padding:clamp(3.5rem,9vw,7rem) 0 clamp(3rem,7vw,5.5rem)}
+.hero .tagline{color:var(--cyan);font-weight:700;font-size:1rem;margin-bottom:1rem}
+.hero h1{color:var(--white);font-size:clamp(2.2rem,7.2vw,4.6rem);max-width:13ch;letter-spacing:-.01em}
+.hero .lead{font-size:clamp(1.1rem,2.4vw,1.4rem);color:var(--silver);max-width:34ch;margin-top:1.4rem;line-height:1.8}
+.hero .actions{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:2.2rem}
+
+/* مسار المنطق: من الفكرة إلى المشروع */
+.flow{
+  list-style:none;margin:clamp(3rem,7vw,5rem) 0 0;padding:0;
+  display:grid;grid-template-columns:repeat(4,1fr);position:relative;
+}
+.flow::before,.flow::after{content:"";position:absolute;top:10px;right:12.5%;left:12.5%;height:2px}
+.flow::before{background:var(--line)}
+.flow::after{
+  background:linear-gradient(to left,var(--cyan),var(--cyan));
+  box-shadow:0 0 12px var(--cyan);
+  transform:scaleX(0);transform-origin:right center;
+  animation:draw 2.1s .5s cubic-bezier(.4,0,.2,1) forwards;
+}
+.flow li{text-align:center;position:relative;padding-top:2.2rem;color:var(--silver);font-weight:700;font-size:clamp(.85rem,2.4vw,1.1rem);line-height:1.5}
+.flow li::before{
+  content:"";position:absolute;top:0;right:50%;transform:translateX(50%);
+  width:22px;height:22px;border-radius:50%;z-index:1;
+  background:var(--navy-900);border:2px solid rgba(160,190,230,.4);
+  animation:lit .4s forwards;
+}
+.flow li:nth-child(1)::before{animation-delay:.5s}
+.flow li:nth-child(2)::before{animation-delay:1.2s}
+.flow li:nth-child(3)::before{animation-delay:1.9s}
+.flow li:nth-child(4)::before{animation-delay:2.6s}
+.flow li:last-child{color:var(--white)}
+.flow small{display:block;font-weight:400;font-size:.82em;color:var(--silver);opacity:.85}
+@keyframes draw{to{transform:scaleX(1)}}
+@keyframes lit{to{background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 0 6px var(--cyan-soft),0 0 18px var(--cyan)}}
+
+/* الأقسام */
+.sec{padding:clamp(3.5rem,8vw,6rem) 0;border-top:1px solid var(--line)}
+.sec h2{color:var(--cyan);font-size:clamp(1.7rem,4.4vw,2.6rem);margin-bottom:1.2rem}
+.sec .intro{max-width:60ch;font-size:1.1rem}
+
+/* من نحن */
+.about{display:grid;grid-template-columns:1.25fr 1fr;gap:clamp(2rem,6vw,5rem);align-items:center}
+.about p + p{margin-top:1rem}
+.about strong{color:var(--white)}
+.emblem{text-align:center}
+.emblem svg{width:min(260px,70%);height:auto}
+.emblem .line{margin-top:1rem;color:var(--white);font-weight:700;letter-spacing:.02em}
+.emblem .line i{font-style:normal;color:var(--cyan);margin-inline:.5rem}
+
+/* الخدمات: كل خدمة بين قوسين برمجيين */
+.services{display:grid;grid-template-columns:repeat(2,1fr);gap:1.4rem;margin-top:2.4rem;list-style:none;padding:0}
+.service{
+  position:relative;padding:2rem 2.2rem;
+  background:linear-gradient(160deg,rgba(13,35,80,.75),rgba(8,24,58,.55));
+  border-radius:4px;
+}
+.service::before,.service::after{
+  content:"";position:absolute;top:0;bottom:0;width:18px;
+  border:2px solid var(--cyan);opacity:.75;transition:width .25s,opacity .25s;
+}
+.service::before{right:0;border-left:0;border-radius:0 14px 14px 0}
+.service::after{left:0;border-right:0;border-radius:14px 0 0 14px}
+.service:hover::before,.service:hover::after{width:34px;opacity:1}
+.service svg{width:44px;height:44px;color:var(--cyan);margin-bottom:.9rem}
+.service h3{color:var(--white);font-size:1.3rem;margin-bottom:.5rem}
+
+/* لماذا نحن */
+.values{display:grid;grid-template-columns:repeat(3,1fr);margin:2.2rem 0 0;padding:0;list-style:none;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:rgba(8,24,58,.6)}
+.values li{padding:2rem 1rem;text-align:center;color:var(--white);font-weight:900;font-size:clamp(1.5rem,5vw,2.6rem);line-height:1.3}
+.values li + li{border-inline-start:1px solid var(--line)}
+.perks{display:grid;grid-template-columns:repeat(2,1fr);gap:1.4rem;margin-top:1.4rem}
+.perk{display:flex;gap:1rem;align-items:flex-start;padding:1.6rem;border:1px solid var(--line);border-radius:16px;background:rgba(8,24,58,.6)}
+.perk svg{width:36px;height:36px;color:var(--cyan);flex:none;margin-top:.2rem}
+.perk h3{color:var(--white);font-size:1.2rem;margin-bottom:.2rem}
+
+/* التواصل */
+.contact{
+  display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:center;
+  margin-top:2rem;padding:clamp(1.6rem,5vw,3rem);
+  border:1px solid rgba(39,228,255,.35);border-radius:20px;
+  background:linear-gradient(140deg,rgba(13,35,80,.9),rgba(5,15,34,.9));
+}
+.phone{display:block;direction:ltr;text-align:right;color:var(--white);font-weight:900;font-size:clamp(2rem,8vw,3.6rem);line-height:1.2;text-decoration:none;letter-spacing:.02em}
+.contact dl{margin:1rem 0 0;display:grid;gap:.4rem}
+.contact dl div{display:flex;gap:.6rem;align-items:center}
+.contact dt{color:var(--cyan);font-weight:700}
+.contact dd{margin:0;color:var(--white)}
+.contact .actions{display:grid;gap:.8rem;min-width:230px}
+.contact .actions .btn{padding:.95rem 1.5rem;font-size:1.08rem}
+.fb{color:var(--cyan);font-weight:600}
+
+footer{border-top:1px solid var(--line);padding:1.6rem 0;font-size:.9rem;text-align:center}
+footer b{color:var(--white)}
+
+/* شريط الاتصال السفلي للهاتف */
+.dock{display:none}
+
+@media (max-width:820px){
+  .nav{
+    display:none;position:absolute;top:100%;right:0;left:0;flex-direction:column;gap:0;
+    background:var(--navy-800);border-bottom:1px solid var(--line);padding:.5rem 1.25rem 1rem;
+  }
+  .nav.open{display:flex}
+  .nav a{display:block;padding:.8rem 0;border-bottom:1px solid var(--line)}
+  .menu-btn{display:inline-grid;place-items:center}
+  .top .btn{display:none}
+  .about,.services,.perks,.contact{grid-template-columns:1fr}
+  .emblem{order:-1}
+  .service{padding:1.6rem 1.9rem}
+  .contact .actions{min-width:0}
+  .phone{text-align:center}
+  .contact dl{justify-items:center}
+  body{padding-bottom:76px}
+  .dock{
+    display:grid;grid-template-columns:1fr 1fr;gap:.6rem;
+    position:fixed;z-index:30;right:0;left:0;bottom:0;
+    padding:.6rem .8rem calc(.6rem + env(safe-area-inset-bottom,0px));
+    background:rgba(5,15,34,.95);border-top:1px solid var(--line);
+  }
+  .dock .btn{padding:.6rem .5rem}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .flow::after{animation:none;transform:none}
+  .flow li::before{animation:none;background:var(--cyan);border-color:var(--cyan)}
+  .service::before,.service::after,.btn{transition:none}
+}
+</style>
+</head>
+<body>
+<canvas id="net" aria-hidden="true"></canvas>
+
+<!-- تعريف الشعار مرة واحدة -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="logo" viewBox="0 0 120 120">
+    <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <!-- دوائر إلكترونية -->
+      <g stroke="#b9c6da" stroke-width="2" opacity=".7">
+        <path d="M60 96v12M44 92l-8 10M76 92l8 10M22 84H10M98 84h12"/>
+      </g>
+      <g fill="#27e4ff" stroke="none">
+        <circle cx="60" cy="111" r="3.2"/><circle cx="34" cy="104" r="3.2"/><circle cx="86" cy="104" r="3.2"/>
+        <circle cx="8" cy="84" r="3.2"/><circle cx="112" cy="84" r="3.2"/>
+      </g>
+      <!-- الأقواس البرمجية -->
+      <path d="M32 36 10 60l22 24" stroke="#27e4ff" stroke-width="7"/>
+      <path d="M88 36l22 24-22 24" stroke="#27e4ff" stroke-width="7"/>
+      <!-- قبعة التخرج -->
+      <path d="M60 34 34 46l26 12 26-12z" fill="#f4f8ff" stroke="#f4f8ff" stroke-width="3"/>
+      <path d="M44 56v12c0 5 7 9 16 9s16-4 16-9V56" stroke="#f4f8ff" stroke-width="4"/>
+      <path d="M86 46v18" stroke="#ff8a1f" stroke-width="3"/>
+      <circle cx="86" cy="67" r="3.4" fill="#ff8a1f" stroke="none"/>
+    </g>
+  </symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3.5 20.5l1.3-4.4A8.5 8.5 0 1 1 8 19.4zM9 8.5c0 3.5 3 6.5 6.5 6.5l1-1.8-2-1-1 .9c-1-.4-2.200-1.600-2.600-2.600l.9-1-1-2z"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#home" aria-label="لوجيكال كود، العودة إلى أعلى الصفحة">
+      <svg><use href="#logo"/></svg>
+      <div><b>لوجيكال كود</b><span lang="en" dir="ltr">Logical Code</span></div>
+    </a>
+    <ul class="nav" id="nav">
+      <li><a href="#home">الرئيسية</a></li>
+      <li><a href="#about">من نحن</a></li>
+      <li><a href="#services">الخدمات</a></li>
+      <li><a href="#why">لماذا نحن</a></li>
+      <li><a href="#contact">التواصل</a></li>
+    </ul>
+    <a class="btn small" href="#contact">تواصل معنا الآن</a>
+    <button class="menu-btn" id="menuBtn" aria-label="فتح القائمة" aria-expanded="false" aria-controls="nav">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="home">
+    <div class="wrap">
+      <p class="tagline">حلول | تطوير | بحوث أكاديمية</p>
+      <h1>المنطق هو البداية لكل مشروع ناجح!</h1>
+      <p class="lead">لا نكتب الأكواد فقط.. بل نبني المنطق الذي يضمن نجاحك.</p>
+      <div class="actions">
+        <a class="btn" href="#contact">تواصل معنا الآن</a>
+      </div>
+
+      <ol class="flow" aria-label="كيف نعمل">
+        <li>فكرتك<small>مشروع أو بحث</small></li>
+        <li>المنطق<small>تحليل وتخطيط</small></li>
+        <li>الكود<small>بناء وتنفيذ</small></li>
+        <li>مشروع ناجح<small>يعمل كما أردت</small></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="sec" id="about">
+    <div class="wrap about">
+      <div>
+        <h2>من نحن</h2>
+        <p><strong>لوجيكال كود</strong> مكتب في الموصل يجمع بين المنطق الأكاديمي والخبرة البرمجية لتقديم حلول تقنية متكاملة.</p>
+        <p>نبدأ كل عمل بفهم المشكلة ورسم منطقها، ثم نكتب الكود. لهذا نخدم صاحب المشروع الذي يحتاج نظاماً يعمل، والباحث الذي يحتاج عملاً يصمد أمام التحكيم.</p>
+      </div>
+      <div class="emblem">
+        <svg viewBox="0 0 120 120" role="img" aria-label="شعار لوجيكال كود"><use href="#logo"/></svg>
+        <p class="line">الثقة<i>|</i>التميّز<i>|</i>الإتقان</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="services">
+    <div class="wrap">
+      <h2>الخدمات</h2>
+      <p class="intro">أربع خدمات، ومنطق واحد: نفهم ما تحتاجه أولاً ثم ننفّذه بإتقان.</p>
+      <ul class="services">
+        <li class="service">
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="8" width="38" height="28" rx="3"/><path d="M5 16h38M20 22l-5 4 5 4M28 22l5 4-5 4M16 42h16"/></svg>
+          <h3>تصميم البرامج والمواقع الإلكترونية</h3>
+          <p>أفكارك نترجمها إلى أكواد ذكية وواجهات حديثة.</p>
+        </li>
+        <li class="service">
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="24" cy="24" r="18"/><path d="M6 24h36M24 6c6 5 9 11 9 18s-3 13-9 18c-6-5-9-11-9-18s3-13 9-18z"/></svg>
+          <h3>دعم الباحثين للنشر العالمي</h3>
+          <p>تحليل البيانات، التنسيق، التدقيق، وضبط الاقتباس والتوثيق وفق معايير المجلات.</p>
+        </li>
+        <li class="service">
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 8 4 18l20 10 20-10z"/><path d="M12 23v9c0 4 5 7 12 7s12-3 12-7v-9M44 18v12"/></svg>
+          <h3>المشاريع الأكاديمية والعملية</h3>
+          <p>استشارات وإسناد برمجي للجانب العملي: بكالوريوس، ماجستير، دكتوراه.</p>
+        </li>
+        <li class="service">
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="13" y="13" width="22" height="22" rx="3"/><rect x="19" y="19" width="10" height="10" rx="1"/><path d="M19 13V6M29 13V6M19 42v-7M29 42v-7M13 19H6M13 29H6M42 19h-7M42 29h-7"/></svg>
+          <h3>صناعة البرمجيات حسب الطلب</h3>
+          <p>أنظمة علمية وتجارية وطبية وفق متطلبات المستفيد.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="sec" id="why">
+    <div class="wrap">
+      <h2>لماذا نحن</h2>
+      <p class="intro">ثلاث كلمات نلتزم بها في كل عمل نسلّمه.</p>
+      <ul class="values">
+        <li>الثقة</li>
+        <li>التميّز</li>
+        <li>الإتقان</li>
+      </ul>
+      <div class="perks">
+        <div class="perk">
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M25 5H9a4 4 0 0 0-4 4v16l18 18 20-20z"/><circle cx="15" cy="15" r="3"/></svg>
+          <div><h3>أسعار مناسبة</h3><p>أسعار مقبولة للجميع، طلاباً وباحثين وأصحاب مشاريع.</p></div>
+        </div>
+        <div class="perk">
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 10h36v24H22l-10 8v-8H6z"/><path d="M16 19h16M16 26h10"/></svg>
+          <div><h3>استشارة مجانية</h3><p>حدّثنا عن مشروعك أو بحثك، والاستشارة الأولى علينا.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="contact">
+    <div class="wrap">
+      <h2>التواصل</h2>
+      <p class="intro">اتصل بنا أو راسلنا على واتساب، واحصل على استشارة مجانية لمشروعك أو بحثك.</p>
+      <div class="contact">
+        <div>
+          <a class="phone" href="tel:+9647764994170" aria-label="اتصل على الرقم 07764994170">0776 499 4170</a>
+          <dl>
+            <div><dt>الموقع:</dt><dd>العراق - الموصل</dd></div>
+            <div><dt>فيسبوك:</dt><dd><a class="fb" href="https://www.facebook.com/logicalcode4all/" target="_blank" rel="noopener">صفحة لوجيكال كود</a></dd></div>
+          </dl>
+        </div>
+        <div class="actions">
+          <a class="btn" href="tel:+9647764994170"><svg><use href="#i-phone"/></svg>اتصل الآن</a>
+          <a class="btn ghost" href="https://wa.me/9647764994170?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%20%D9%84%D9%88%D8%AC%D9%8A%D9%83%D8%A7%D9%84%20%D9%83%D9%88%D8%AF" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>راسلنا على واتساب</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap"><b>لوجيكال كود</b> © 2026، العراق - الموصل. حلول | تطوير | بحوث أكاديمية</div>
+</footer>
+
+<div class="dock">
+  <a class="btn" href="tel:+9647764994170"><svg><use href="#i-phone"/></svg>اتصل الآن</a>
+  <a class="btn ghost" href="https://wa.me/9647764994170" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>واتساب</a>
+</div>
+
+<script>
+// قائمة الهاتف
+(function(){
+  var btn=document.getElementById('menuBtn'),nav=document.getElementById('nav');
+  btn.addEventListener('click',function(){
+    var open=nav.classList.toggle('open');
+    btn.setAttribute('aria-expanded',open);
+    btn.setAttribute('aria-label',open?'إغلاق القائمة':'فتح القائمة');
+  });
+  nav.addEventListener('click',function(e){
+    if(e.target.tagName==='A'){nav.classList.remove('open');btn.setAttribute('aria-expanded','false');}
+  });
+})();
+
+// خلفية الشبكة: نقاط وخطوط متحركة
+(function(){
+  var c=document.getElementById('net'),x=c.getContext('2d');
+  var still=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var w,h,pts=[],raf=null,dpr=Math.min(window.devicePixelRatio||1,2);
+  function size(){
+    w=window.innerWidth;h=window.innerHeight;
+    c.width=w*dpr;c.height=h*dpr;x.setTransform(dpr,0,0,dpr,0,0);
+    var n=Math.max(18,Math.min(64,Math.round(w*h/26000)));
+    pts=[];
+    for(var i=0;i<n;i++)pts.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.28,vy:(Math.random()-.5)*.28});
+    if(still)draw();
+  }
+  function draw(){
+    x.clearRect(0,0,w,h);
+    var R=150,i,j,a,b,dx,dy,d;
+    for(i=0;i<pts.length;i++){
+      a=pts[i];
+      if(!still){
+        a.x+=a.vx;a.y+=a.vy;
+        if(a.x<0||a.x>w)a.vx*=-1;
+        if(a.y<0||a.y>h)a.vy*=-1;
+      }
+      for(j=i+1;j<pts.length;j++){
+        b=pts[j];dx=a.x-b.x;dy=a.y-b.y;d=Math.sqrt(dx*dx+dy*dy);
+        if(d<R){
+          x.strokeStyle='rgba(39,228,255,'+(0.16*(1-d/R)).toFixed(3)+')';
+          x.lineWidth=1;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();
+        }
+      }
+      x.fillStyle='rgba(39,228,255,.55)';
+      x.beginPath();x.arc(a.x,a.y,1.8,0,6.283);x.fill();
+    }
+  }
+  function loop(){draw();raf=requestAnimationFrame(loop);}
+  window.addEventListener('resize',size);
+  document.addEventListener('visibilitychange',function(){
+    if(still)return;
+    if(document.hidden){cancelAnimationFrame(raf);raf=null;}
+    else if(!raf)loop();
+  });
+  size();
+  if(!still)loop();
+})();
+</script>
+</body>
+</html>
